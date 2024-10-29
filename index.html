@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Manual Random Digit Input and Cumulative Probability with Range
+    </title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
+
+      body {
+        font-family: "Nunito", sans-serif;
+        background: linear-gradient(
+          to right,
+          #1e1e2f,
+          #2b2b40
+        ); /* Added gradient background */
+        margin: 0;
+        padding: 0;
+        color: white;
+        transition: background-color 0.3s ease;
+      }
+
+      h2 {
+        text-align: center;
+        color: white;
+        font-weight: 700;
+        margin-bottom: 30px;
+        letter-spacing: 1.5px;
+      }
+
+      .container {
+        width: 85%;
+        max-width: 1100px;
+        margin: 40px auto;
+        background-color: #2b2b40;
+        padding: 50px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8);
+        border-radius: 15px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-sizing: border-box; /* Added to include padding in total width */
+        overflow: hidden; /* Ensure content doesn't overflow */
+      }
+
+      .container:hover {
+        transform: translateY(-3px); /* Slight lift on hover */
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 1);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 40px;
+        border-radius: 10px;
+        overflow: hidden; /* Prevent overflow of table */
+        table-layout: fixed; /* Fix column width based on content */
+      }
+
+      table,
+      th,
+      td {
+        border: none;
+      }
+
+      th {
+        background-color: #3d3d5c;
+        color: #ffffff;
+        padding: 18px;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-align: left;
+      }
+
+      td {
+        padding: 16px;
+        text-align: center;
+        color: white;
+        background-color: #2a2a3f;
+        border-bottom: 1px solid #3a3a5c;
+        transition: background-color 0.2s ease;
+      }
+
+      td:hover {
+        background-color: #404060;
+        color: #7d83ff;
+      }
+
+      tr:nth-child(even) td {
+        background-color: #23232e; /* Alternating row color */
+      }
+
+      .input-button-container {
+        display: flex; /* Use flexbox for layout */
+        align-items: center; /* Center items vertically */
+        margin-top: 10px; /* Space above input and button */
+      }
+
+      input[type="number"] {
+        padding: 12px;
+        width: 101px;
+        border-radius: 25px;
+        border: 1px solid #555;
+        background-color: #3a3a5c;
+        color: #e0e0e0;
+        transition: border 0.2s ease, box-shadow 0.2s ease;
+        margin-right: 10px; /* Space between input and button */
+      }
+
+      input[type="number"]:focus {
+        border-color: #7d83ff;
+        box-shadow: 0 0 8px rgba(125, 131, 255, 0.4);
+        outline: none;
+      }
+
+      button {
+        background-color: #d77c21;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+
+      button:hover {
+        background-color: #5f64d8;
+        transform: translateY(-3px);
+      }
+
+      button:active {
+        transform: translateY(0px);
+        background-color: #5f64d8; /* Maintain hover color on active */
+      }
+
+      .form-group {
+        margin-bottom: 25px;
+      }
+
+      .form-group label {
+        font-weight: 600;
+        margin-right: 10px;
+        color: #e0e0e0;
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      hr {
+        border: 0;
+        border-top: 2px solid #3a3a5c;
+        margin: 50px 0;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          width: 95%;
+          padding: 30px;
+        }
+
+        table,
+        th,
+        td {
+          font-size: 14px;
+        }
+
+        input[type="number"] {
+          width: 60px; /* Adjusted width for smaller screens */
+        }
+
+        button {
+          padding: 10px 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>
+        Enter the Number of Rows for Value and Probability (Inter-arrival Time)
+      </h2>
+
+      <div class="form-group">
+        <label for="numRows">Enter number of rows:</label>
+        <input
+          type="number"
+          id="numRows"
+          min="1"
+          placeholder="Enter number"
+          required
+        />
+        <button onclick="generateValueProbabilityInputs()">
+          Create Value & Probability Inputs
+        </button>
+      </div>
+
+      <div id="inputSection"></div>
+
+      <table id="valueProbabilityTable">
+        <tr>
+          <th>Row</th>
+          <th>Value</th>
+          <th>Probability</th>
+          <th>Cumulative Probability</th>
+          <th>Range</th>
+        </tr>
+      </table>
+
+      <h2>Enter the Number of Rows for Value and Probability (Service Time)</h2>
+
+      <div class="form-group">
+        <label for="numRows1">Enter number of rows:</label>
+        <input
+          type="number"
+          id="numRows1"
+          min="1"
+          placeholder="Enter number"
+          required
+        />
+        <button onclick="generateValueProbabilityInputs1()">
+          Create Value & Probability Inputs
+        </button>
+      </div>
+
+      <div id="inputSection1"></div>
+
+      <table id="valueProbabilityTable1">
+        <tr>
+          <th>Row</th>
+          <th>Value</th>
+          <th>Probability</th>
+          <th>Cumulative Probability</th>
+          <th>Range</th>
+        </tr>
+      </table>
+
+      <hr />
+
+      <h2>Enter Random Digits for Service and Inter-arrival Time</h2>
+
+      <div class="form-group">
+        <label for="numCustomers">Enter number of customers:</label>
+        <input
+          type="number"
+          id="numCustomers"
+          min="1"
+          max="100"
+          placeholder="Enter number"
+          required
+        />
+        <button onclick="generateInputFields()">Create Input Fields</button>
+      </div>
+
+      <div id="randomInputSection"></div>
+
+      <table id="randomTable">
+        <tr>
+          <th>Customer</th>
+          <th>Random Digit for Arrival</th>
+          <th>Random Digit for Service</th>
+          <th>Inter-arrival Time</th>
+          <th>Service Time</th>
+        </tr>
+      </table>
+
+      <div id="resultContainer"></div>
+    </div>
+
+    <script>
+      // Function to generate input fields for Value and Probability
+      function generateValueProbabilityInputs() {
+        let numberOfRows = document.getElementById("numRows").value;
+        let inputSection = document.getElementById("inputSection");
+
+        // Clear any existing input fields
+        inputSection.innerHTML = "";
+
+        // If input is invalid or empty, alert the user
+        if (!numberOfRows || numberOfRows < 1) {
+          alert("Please enter a valid number of rows.");
+          return;
+        }
+
+        // Create input fields for Value and Probability
+        let formHtml =
+          "<h3>Enter Values and Probabilities (Inter-arrival Time)</h3>";
+
+        for (let i = 1; i <= numberOfRows; i++) {
+          formHtml += `
+                <div>
+                    <label>Row ${i}: </label>
+                    Value: <input type="number" id="value_${i}" required>
+                    Probability: <input type="number" id="probability_${i}" step="0.01" min="0" max="1" required>
+                </div>
+            `;
+        }
+
+        formHtml +=
+          '<br><button onclick="generateFinalTable(' +
+          numberOfRows +
+          ", 'valueProbabilityTable')\">Generate Table</button>";
+        inputSection.innerHTML = formHtml;
+      }
+
+      function generateValueProbabilityInputs1() {
+        let numberOfRows = document.getElementById("numRows1").value;
+        let inputSection1 = document.getElementById("inputSection1");
+
+        // Clear any existing input fields
+        inputSection1.innerHTML = "";
+
+        // If input is invalid or empty, alert the user
+        if (!numberOfRows || numberOfRows < 1) {
+          alert("Please enter a valid number of rows.");
+          return;
+        }
+
+        // Create input fields for Value and Probability (Service Time)
+        let formHtml1 =
+          "<h3>Enter Values and Probabilities (Service Time)</h3>";
+
+        for (let i = 1; i <= numberOfRows; i++) {
+          formHtml1 += `
+                <div>
+                    <label>Row ${i}: </label>
+                    Value: <input type="number" id="value1_${i}" required>
+                    Probability: <input type="number" id="probability1_${i}" step="0.01" min="0" max="1" required>
+                </div>`;
+        }
+
+        formHtml1 +=
+          '<br><button onclick="generateFinalTable(' +
+          numberOfRows +
+          ", 'valueProbabilityTable1')\">Generate Table</button>";
+        inputSection1.innerHTML = formHtml1;
+      }
+
+      // Function to generate the table based on user inputs
+      function generateFinalTable(numberOfRows, tableId) {
+        let table = document.getElementById(tableId);
+
+        // Clear previous table rows except the header
+        table.innerHTML = `
+            <tr>
+                <th>Row</th>
+                <th>Value</th>
+                <th>Probability</th>
+                <th>Cumulative Probability</th>
+                <th>Range</th>
+            </tr>`;
+
+        let cumulativeProbability = 0;
+        let previousRangeEnd = 0;
+
+        // Loop through the number of rows to generate the table
+        for (let i = 1; i <= numberOfRows; i++) {
+          let value = document.getElementById(
+            tableId === "valueProbabilityTable" ? `value_${i}` : `value1_${i}`
+          ).value;
+          let probability = document.getElementById(
+            tableId === "valueProbabilityTable"
+              ? `probability_${i}`
+              : `probability1_${i}`
+          ).value;
+
+          // Check if user entered values are valid
+          if (!value || probability < 0 || probability > 1) {
+            alert(`Please enter valid values for Row ${i}.`);
+            return;
+          }
+
+          // Calculate the cumulative probability
+          cumulativeProbability += parseFloat(probability);
+
+          // Calculate the range based on cumulative probability
+          let rangeStart = previousRangeEnd + 1;
+          let rangeEnd = Math.round(cumulativeProbability * 100);
+          if(rangeEnd==100){
+            rangeEnd=100-1;
+          }
+          let range = `${rangeStart.toString().padStart(2, "0")} - ${rangeEnd
+            .toString()
+            .padStart(2, "0")}`;
+          previousRangeEnd = rangeEnd;
+         
+          
+          let row = table.insertRow();
+          row.insertCell(0).innerHTML = i;
+          row.insertCell(1).innerHTML = value;
+          row.insertCell(2).innerHTML = probability;
+          row.insertCell(3).innerHTML = cumulativeProbability.toFixed(2);
+          row.insertCell(4).innerHTML = range;
+           if ( cumulativeProbability>1) {
+            alert(`The sum Of cumulative Prbablity is greater than 1`);
+            return;
+          }
+        }
+      }
+
+      // Function to dynamically generate input fields based on the number of customers
+      function generateInputFields() {
+        let numberOfCustomers = document.getElementById("numCustomers").value;
+        let randomInputSection = document.getElementById("randomInputSection");
+
+        // Clear any existing input fields
+        randomInputSection.innerHTML = "";
+
+        // If input is invalid or empty, alert the user
+        if (!numberOfCustomers || numberOfCustomers < 1) {
+          alert("Please enter a valid number of customers.");
+          return;
+        }
+
+        // Create a form for entering random digits
+        let formHtml = "<h3>Enter Random Digits for Each Customer</h3>";
+
+        for (let i = 1; i <= numberOfCustomers; i++) {
+          formHtml += `
+                <div class="form-group">
+                    <label>Customer ${i}:</label>
+                    Random Digit for Arrival: <input type="number" id="arrival_${i}" required>
+                    Random Digit for Service: <input type="number" id="service_${i}" required>
+                </div>
+            `;
+        }
+
+        formHtml +=
+          '<br><button onclick="generateRandomTable(' +
+          numberOfCustomers +
+          ')">Generate Table</button>';
+        randomInputSection.innerHTML = formHtml;
+      }
+
+      // Function to generate table based on random digits and derive times
+      function generateRandomTable(numberOfCustomers) {
+    let randomTable = document.getElementById("randomTable");
+
+    // Clear previous table rows except the header
+    randomTable.innerHTML = `
+        <tr>
+            <th>Cust/th>
+            <th>Random Digit for Arrival</th>
+            <th>Random Digit for Service</th>
+            <th>Inter-arrival Time</th>
+            <th>Service Time</th>
+            <th>Arrival Time</th>
+            <th>Time Service Begins</th>
+            <th>Waiting Time in Queue</th>
+            <th>Time Service Ends</th>
+            <th>Idle Time of Server</th>
+             <th>Max Queue</th>
+            
+        </tr>`;
+
+    let previousServiceEnd = 0; // To track when the server is available
+    let arrivalTime = 0; // Start at time 0
+    let queue = [];
+    let maxQueueLength = 0; // Track the maximum queue length
+    let totalWaitingTime = 0; // To calculate the total waiting time
+    let totalTimeInSystem = 0; // To calculate the total time in system
+
+    // Variables to store the required customer data
+    let fifthCustomerTimeSpent = 0;
+    let sixthCustomerWaitingTime = 0;
+    let seventhCustomerArrivalTime = 0;
+    let tenthCustomerServiceStartTime = 0;
+
+    // Loop through the number of customers to generate the table
+    for (let i = 1; i <= numberOfCustomers; i++) {
+        let arrivalDigit = document.getElementById(`arrival_${i}`).value;
+        let serviceDigit = document.getElementById(`service_${i}`).value;
+
+        // Check if user entered values are valid
+        if (!arrivalDigit || !serviceDigit) {
+            alert(`Please enter valid random digits for Customer ${i}.`);
+            return;
+        }
+
+        // Calculate inter-arrival and service times
+        let interArrivalTime = i === 1 ? 0 : findValueFromRange(arrivalDigit, "valueProbabilityTable");
+        let serviceTime = findValueFromRange(serviceDigit, "valueProbabilityTable1");
+
+        // Calculate arrival time (previous arrival time + inter-arrival time)
+        arrivalTime = i === 1 ? 0 : parseInt(arrivalTime) + parseInt(interArrivalTime);
+
+        // Calculate the time service begins
+        let timeServiceBegins = Math.max(previousServiceEnd, arrivalTime);
+
+        // Calculate waiting time in queue
+        let waitingTime = timeServiceBegins - arrivalTime;
+
+        // Calculate the time service ends
+        let timeServiceEnds = timeServiceBegins + parseInt(serviceTime);
+
+        // Calculate idle time of the server
+        let idleTime = i === 1 ? 0 : Math.max(0, arrivalTime - previousServiceEnd);
+
+        // Update previous service end time
+        previousServiceEnd = timeServiceEnds;
+
+        // Update the queue and calculate max queue length
+        if (i === 1) {
+            queue = []; // First customer queue length is always 0
+        } else {
+            if (arrivalTime < previousServiceEnd) {
+                queue.push({ arrivalTime, serviceTime, timeServiceEnds }); // Add to queue if arrival is less than previous service end
+            }
+            queue = queue.filter(
+              (customer) => customer.timeServiceEnds > arrivalTime
+            ); // Remove completed customers
+        }
+
+        // Track the maximum queue length
+        maxQueueLength = Math.max(maxQueueLength, queue.length);
+
+        // Calculate the total waiting time and total time in the system
+        totalWaitingTime += waitingTime;
+        let timeInSystem = timeServiceEnds - arrivalTime;
+        totalTimeInSystem += timeInSystem;
+
+        // Track special customers
+        if (i === 5) fifthCustomerTimeSpent = timeInSystem; // Time spent in system for 5th customer
+        if (i === 6) sixthCustomerWaitingTime = waitingTime; // Waiting time for 6th customer
+        if (i === 7) seventhCustomerArrivalTime = arrivalTime; // Arrival time for 7th customer
+        if (i === 10) tenthCustomerServiceStartTime = timeServiceBegins; // Service start time for 10th customer
+
+        // Add the data to the table
+        let row = randomTable.insertRow();
+        row.insertCell(0).innerHTML = i;
+        row.insertCell(1).innerHTML = arrivalDigit;
+        row.insertCell(2).innerHTML = serviceDigit;
+        row.insertCell(3).innerHTML = interArrivalTime;
+        row.insertCell(4).innerHTML = serviceTime;
+        row.insertCell(5).innerHTML = arrivalTime;
+        row.insertCell(6).innerHTML = timeServiceBegins;
+        row.insertCell(7).innerHTML = waitingTime;
+        row.insertCell(8).innerHTML = timeServiceEnds;
+        row.insertCell(9).innerHTML = idleTime;
+        row.insertCell(10).innerHTML = i === 1 ? 0 : maxQueueLength;
+    }
+
+    // Display the results outside the table
+    let resultContainer = document.getElementById("resultContainer");
+    resultContainer.innerHTML = `
+        <p>Average Waiting Time: ${(totalWaitingTime / numberOfCustomers).toFixed(2)}(min)</p>
+        <p>Total Time in System: ${(totalTimeInSystem / numberOfCustomers).toFixed(2)}(min)</p>
+        <p>Maximum Queue Length: ${parseInt(maxQueueLength)}</p>
+        <p>Time spent by 5th customer: ${fifthCustomerTimeSpent}(min)</p>
+        <p>Waiting time of 6th customer: ${sixthCustomerWaitingTime}(min)</p>
+        <p>Arrival time of 7th customer: ${seventhCustomerArrivalTime}(min)</p>
+        <p>Service start time of 10th customer: ${tenthCustomerServiceStartTime}(min)</p>
+    `;
+}
+
+      // Helper function to find the value from the table based on random digit
+      function findValueFromRange(randomDigit, tableId) {
+        let table = document.getElementById(tableId);
+        let rows = table.rows;
+
+        // Loop through each row and check if the random digit falls within the range
+        for (let i = 1; i < rows.length; i++) {
+          let range = rows[i].cells[4].innerHTML.split(" - "); // Get range column and split it
+          let rangeStart = parseInt(range[0]);
+          let rangeEnd = parseInt(range[1]);
+
+          // Check if the random digit falls within this range
+          if (randomDigit >= rangeStart && randomDigit <= rangeEnd) {
+            return rows[i].cells[1].innerHTML; // Return the corresponding value
+          }
+        }
+
+        return "N/A"; // If no match is found, return "N/A"
+      }
+    </script>
+  </body>
+</html>
